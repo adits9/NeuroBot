@@ -1,63 +1,66 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NeuroBot Live</title>
-  </head>
-  <body>
-    <h1>NeuroBot — Live Neurofeedback</h1>
-    <div id="status">Connecting...</div>
-    <pre id="log"></pre>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroBot - EEG Analysis & Therapy Assistant</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>NeuroBot</h1>
+            <div class="connection-status">
+                <span id="connectionStatus" class="status-indicator"></span>
+                <span id="connectionStatusText">Disconnected</span>
+            </div>
+        </div>
+    </header>
 
-    <script>
-      const log = msg => { const p = document.getElementById('log'); p.innerText = msg + '\n' + p.innerText }
-      
-      function connectWebSocket() {
-        const status = document.getElementById('status')
-        status.innerText = 'Connecting...'
-        
-        // Construct WebSocket URL
-        const wsProto = location.protocol === 'https:' ? 'wss' : 'ws'
-        const wsHost = location.hostname + (location.port ? ':' + location.port : '')
-        const wsUrl = `${wsProto}://${wsHost}/ws/neuro/`
-        console.log('Connecting to WebSocket:', wsUrl)
-        
-        const ws = new WebSocket(wsUrl)
-        
-        ws.onopen = () => {
-          console.log('WebSocket connected')
-          status.innerText = 'Connected (live)'
-          log('WebSocket connection established')
-        }
-        
-        ws.onmessage = ev => {
-          try {
-            const data = JSON.parse(ev.data)
-            log(JSON.stringify(data, null, 2))
-          } catch(e) {
-            console.error('WebSocket message error:', e)
-            log(ev.data)
-          }
-        }
-        
-        ws.onclose = (ev) => {
-          console.log('WebSocket closed:', ev.code, ev.reason)
-          status.innerText = 'Disconnected'
-          // Try to reconnect after 2 seconds
-          setTimeout(connectWebSocket, 2000)
-        }
-        
-        ws.onerror = (ev) => {
-          console.error('WebSocket error:', ev)
-          log('WebSocket error occurred')
-        }
-        
-        return ws
-      }
-      
-      // Start the initial connection
-      const ws = connectWebSocket()
-    </script>
-  </body>
+    <main class="container">
+        <div class="dashboard">
+            <!-- EEG Visualization Card -->
+            <div class="card">
+                <h2 class="card-title">Real-time EEG Signal</h2>
+                <div class="eeg-chart">
+                    <canvas id="eegChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Emotion Analysis Card -->
+            <div class="card">
+                <h2 class="card-title">Current Emotional State</h2>
+                <div class="emotion-display">
+                    <span id="emotionIcon" class="emotion-icon">😐</span>
+                    <span id="currentEmotion">Analyzing...</span>
+                </div>
+                <div id="emotionHistory">
+                    <!-- Emotion history will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Therapy Chat Card -->
+            <div class="card">
+                <h2 class="card-title">Therapy Assistant</h2>
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages">
+                        <!-- Chat messages will be populated by JavaScript -->
+                    </div>
+                    <form id="chatForm" class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/client.js"></script>
+</body>
 </html>

@@ -88,10 +88,9 @@ class UploadEEGAPIView(APIView):
         # Notify websocket consumers
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)('neurobot_live', {
-            'type': 'eeg.processed',
-            'record_id': rec.id,
-            'features': features,
-            'mood': mood,
+            'type': 'eeg_processed',
+            'eeg_data': eeg,  # Send raw EEG data for visualization
+            'emotion': mood,  # Send the inferred emotion
         })
 
         return Response({'id': rec.id, 'mood': mood, 'features': features, 's3': s3_url})

@@ -60,20 +60,51 @@ class NeuroConsumer(AsyncWebsocketConsumer):
         """Handle incoming messages"""
         if text_data:
             try:
-                await self.send(text_data=json.dumps({
-                    'type': 'echo',
-                    'message': text_data
-                }))
-                logger.info(f"Echoed message: {text_data[:100]}...")
+                data = json.loads(text_data)
+                message_type = data.get('type', '')
+                
+                if message_type == 'chat_message':
+                    # Handle chat messages
+                    await self.channel_layer.group_send(
+                        self.group_name,
+                        {
+                            'type': 'chat_message',
+                            'message': data.get('message', '')
+                        }
+                    )
+                else:
+                    # Echo back unknown message types
+                    await self.send(text_data=json.dumps({
+                        'type': 'echo',
+                        'message': text_data
+                    }))
+                logger.info(f"Handled message type: {message_type}")
             except Exception as e:
                 logger.error(f"Error in receive: {str(e)}")
 
     async def eeg_processed(self, event):
-        # Event sent from view when EEG is processed
-        payload = {
-            'type': 'eeg_processed',
-            'record_id': event.get('record_id'),
-            'features': event.get('features'),
-            'mood': event.get('mood'),
-        }
-        await self.send(text_data=json.dumps(payload))
+        """Handle processed EEG data"""
+        try:
+            payload = {
+                'type': 'eeg_data',
+                'eeg_data': event.get('eeg_data', []),
+                'emotion': event.get('emotion', 'neutral'),
+            }
+            await self.send(text_data=json.dumps(payload))
+            logger.info("Sent EEG data update")
+        except Exception as e:
+            logger.error(f"Error in eeg_processed: {str(e)}")
+
+    async def chat_message(self, event):
+        """Handle chat messages"""
+        try:
+            # Here you would typically call your ChatGPT/OpenAI integration
+            # For now, we'll echo back a simple response
+            response = f"NeuroBot: I received your message: {event['message']}"
+            await self.send(text_data=json.dumps({
+                'type': 'chat_response',
+                'message': response
+            }))
+            logger.info("Sent chat response")
+        except Exception as e:
+            logger.error(f"Error in chat_message: {str(e)}")
