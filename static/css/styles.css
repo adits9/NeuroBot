@@ -8,6 +8,24 @@
     --success-color: #28A745;
     --warning-color: #FFC107;
     --danger-color: #DC3545;
+    --animation-duration: 0.3s;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 body {
@@ -49,6 +67,13 @@ body {
     border-radius: 10px;
     padding: 1.5rem;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    animation: fadeIn var(--animation-duration) ease-out;
+    transition: transform var(--animation-duration), box-shadow var(--animation-duration);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
 }
 
 .card-title {
@@ -73,6 +98,12 @@ body {
 
 .emotion-icon {
     font-size: 2rem;
+    transition: transform var(--animation-duration);
+}
+
+.emotion-icon:hover {
+    transform: scale(1.2);
+    animation: pulse 1s infinite;
 }
 
 .chat-container {
@@ -94,17 +125,25 @@ body {
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 5px;
+    animation: slideIn var(--animation-duration) ease-out;
+    transition: transform var(--animation-duration);
 }
 
 .user-message {
     background-color: var(--primary-color);
     color: white;
     margin-left: 2rem;
+    transform-origin: right center;
 }
 
 .bot-message {
     background-color: var(--border-color);
     margin-right: 2rem;
+    transform-origin: left center;
+}
+
+.message:hover {
+    transform: scale(1.01);
 }
 
 .chat-input {
@@ -128,11 +167,20 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.2s;
+    transition: all var(--animation-duration);
+    position: relative;
+    overflow: hidden;
 }
 
 .chat-input button:hover {
-    background-color: darken(var(--primary-color), 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background-color: var(--primary-color);
+}
+
+.chat-input button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .status-indicator {
@@ -141,18 +189,22 @@ body {
     height: 10px;
     border-radius: 50%;
     margin-right: 0.5rem;
+    transition: transform var(--animation-duration);
 }
 
 .status-connected {
     background-color: var(--success-color);
+    animation: pulse 2s infinite;
 }
 
 .status-disconnected {
     background-color: var(--danger-color);
+    animation: fadeIn var(--animation-duration);
 }
 
 .status-connecting {
     background-color: var(--warning-color);
+    animation: pulse 1s infinite;
 }
 
 /* Responsive design */
