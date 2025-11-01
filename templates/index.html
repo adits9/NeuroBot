@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NeuroBot Live</title>
+  </head>
+  <body>
+    <h1>NeuroBot — Live Neurofeedback</h1>
+    <div id="status">Connecting...</div>
+    <pre id="log"></pre>
+
+    <script>
+      const log = msg => { const p = document.getElementById('log'); p.innerText = msg + '\n' + p.innerText }
+      
+      function connectWebSocket() {
+        const status = document.getElementById('status')
+        status.innerText = 'Connecting...'
+        
+        // Construct WebSocket URL
+        const wsProto = location.protocol === 'https:' ? 'wss' : 'ws'
+        const wsHost = location.hostname + (location.port ? ':' + location.port : '')
+        const wsUrl = `${wsProto}://${wsHost}/ws/neuro/`
+        console.log('Connecting to WebSocket:', wsUrl)
+        
+        const ws = new WebSocket(wsUrl)
+        
+        ws.onopen = () => {
+          console.log('WebSocket connected')
+          status.innerText = 'Connected (live)'
+          log('WebSocket connection established')
+        }
+        
+        ws.onmessage = ev => {
+          try {
+            const data = JSON.parse(ev.data)
+            log(JSON.stringify(data, null, 2))
+          } catch(e) {
+            console.error('WebSocket message error:', e)
+            log(ev.data)
+          }
+        }
+        
+        ws.onclose = (ev) => {
+          console.log('WebSocket closed:', ev.code, ev.reason)
+          status.innerText = 'Disconnected'
+          // Try to reconnect after 2 seconds
+          setTimeout(connectWebSocket, 2000)
+        }
+        
+        ws.onerror = (ev) => {
+          console.error('WebSocket error:', ev)
+          log('WebSocket error occurred')
+        }
+        
+        return ws
+      }
+      
+      // Start the initial connection
+      const ws = connectWebSocket()
+    </script>
+  </body>
+</html>

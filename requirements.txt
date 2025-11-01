@@ -1,0 +1,9 @@
+Django>=4.2
+djangorestframework
+channels
+numpy
+pandas
+psycopg2-binary
+boto3
+openai
+python-dotenv
