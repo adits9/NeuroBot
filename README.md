@@ -1,4 +1,4 @@
-# NeuroBot — NeuroTech UIUC (September 2025)
+# NeuroBot — NeuroTech UIUC
 
 NeuroBot is a small demo scaffold implementing a basic EEG-based student mental-wellness platform. It demonstrates:
 
@@ -36,4 +36,3 @@ Notes:
 
 - This is a minimal scaffold to demonstrate integration points (EEG processing, OpenAI, S3, live websocket feedback). It intentionally keeps EEG processing simple (mean/std) and uses OpenAI calls as a lightweight inference helper — replace with your own model or MATLAB pipeline for production.
 - The Channels layer uses an in-memory channel layer for convenience. For production, configure Redis.
-# NeuroBot
